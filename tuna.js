@@ -15,7 +15,7 @@
 */
 /*global module*/
 (function() {
-
+    var fs = require('fs');
     var userContext,
         userInstance,
         pipe = function(param, val) {
@@ -782,26 +782,24 @@
                 return this.convolver.buffer;
             },
             set: function(impulse) {
-                var convolver = this.convolver,
-                    xhr = new XMLHttpRequest();
+                var convolver = this.convolver;
                 if (!impulse) {
                     console.log("Tuna.Convolver.setBuffer: Missing impulse path!");
                     return;
                 }
-                xhr.open("GET", impulse, true);
-                xhr.responseType = "arraybuffer";
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status < 300 && xhr.status > 199 || xhr.status === 302) {
-                            userContext.decodeAudioData(xhr.response, function(buffer) {
-                                convolver.buffer = buffer;
-                            }, function(e) {
-                                if (e) console.log("Tuna.Convolver.setBuffer: Error decoding data" + e);
-                            });
-                        }
+
+
+                fs.readFile(impulse, (err, file) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        userContext.decodeAudioData(file, function(buffer) {
+                            convolver.buffer = buffer;
+                        }, function(e) {
+                            if (e) console.log("Tuna.Convolver.setBuffer: Error decoding data" + e);
+                        });
                     }
-                };
-                xhr.send(null);
+                })
             }
         }
     });
