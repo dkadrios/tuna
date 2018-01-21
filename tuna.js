@@ -793,7 +793,8 @@
                     if (err) {
                         console.log(err);
                     } else {
-                        userContext.decodeAudioData(file, function(buffer) {
+                        var arrayBuffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength)
+                        userContext.decodeAudioData(arrayBuffer, function(buffer) {
                             convolver.buffer = buffer;
                         }, function(e) {
                             if (e) console.log("Tuna.Convolver.setBuffer: Error decoding data" + e);
